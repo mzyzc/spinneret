@@ -1,5 +1,7 @@
-use clap::{Arg, App};
+use std::io::prelude::*;
+use std::fs;
 use std::net::{TcpListener, TcpStream};
+use clap::{Arg, App};
 
 fn main() -> std::io::Result<()> {
     let matches = get_args();
@@ -15,8 +17,23 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn handle_client(stream: TcpStream) {
-    println!("stream received");
+fn handle_client(mut stream: TcpStream) {
+    let mut buffer = [0; 1024];
+
+    stream.read(&mut buffer).unwrap();
+    println!("{}", String::from_utf8_lossy(&buffer[..]));
+
+    let html = fs::read_to_string("../www/index.html").unwrap();
+
+    let response = format!(
+        "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n{}",
+        "text/html",
+        html.len(),
+        html
+    );
+
+    stream.write(response.as_bytes()).unwrap();
+    stream.flush().unwrap();
 }
 
 fn get_args() -> clap::ArgMatches {
