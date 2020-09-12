@@ -1,6 +1,9 @@
+mod http;
+
 use std::io::prelude::*;
 use std::fs;
 use std::net::{TcpListener, TcpStream};
+use crate::http::HttpResponse;
 use clap::{Arg, App};
 
 fn main() -> std::io::Result<()> {
@@ -25,14 +28,13 @@ fn handle_client(mut stream: TcpStream) {
 
     let html = fs::read_to_string("../www/index.html").unwrap();
 
-    let response = format!(
-        "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n{}",
-        "text/html",
-        html.len(),
-        html
-    );
+    let response = HttpResponse {
+        content_type: String::from("text/html"),
+        content_length: html.len(),
+        body: html,
+    };
 
-    stream.write(response.as_bytes()).unwrap();
+    stream.write(response.write_response().as_bytes()).unwrap();
     stream.flush().unwrap();
 }
 
