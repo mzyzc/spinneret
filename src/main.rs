@@ -10,7 +10,9 @@ fn main() -> std::io::Result<()> {
     let matches = get_args();
 
     let config = matches.value_of("config").unwrap_or("settings.conf");
+    let webroot = matches.value_of("webroot").unwrap_or("../www/index.html");
     println!("Config file located at: {}", config);
+    println!("Web root directory located at: {}", webroot);
 
     let listener = TcpListener::bind("127.0.0.1:80")?;
 
@@ -26,7 +28,9 @@ fn handle_client(mut stream: TcpStream) {
     stream.read(&mut buffer).unwrap();
     println!("{}", String::from_utf8_lossy(&buffer[..]));
 
-    let html = fs::read_to_string("../www/index.html").unwrap();
+    let matches = get_args();
+    let webroot = matches.value_of("webroot").unwrap_or("../www/index.html");
+    let html = fs::read_to_string(webroot).unwrap();
 
     let response = HttpResponse {
         content_type: String::from("text/html"),
@@ -46,6 +50,12 @@ fn get_args() -> clap::ArgMatches {
             .value_name("FILE")
             .takes_value(true)
             .about("Sets config file"))
+        .arg(Arg::with_name("webroot")
+            .short('r')
+            .long("root")
+            .value_name("DIRECTORY")
+            .takes_value(true)
+            .about("Sets the web root directory"))
         .arg(Arg::with_name("INPUT")
             .required(true))
         .get_matches()
