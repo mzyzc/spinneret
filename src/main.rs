@@ -9,12 +9,14 @@ use clap::{Arg, App};
 fn main() -> std::io::Result<()> {
     let matches = get_args();
 
+    let address = matches.value_of("address").unwrap_or("127.0.0.1:80");
     let config = matches.value_of("config").unwrap_or("settings.conf");
     let webroot = matches.value_of("webroot").unwrap_or("../www/index.html");
+    println!("Serving on address: {}", address);
     println!("Config file located at: {}", config);
     println!("Web root directory located at: {}", webroot);
 
-    let listener = TcpListener::bind("127.0.0.1:80")?;
+    let listener = TcpListener::bind(address)?;
 
     for stream in listener.incoming() {
         handle_client(stream?);
@@ -44,6 +46,12 @@ fn handle_client(mut stream: TcpStream) {
 
 fn get_args() -> clap::ArgMatches {
     App::new("spinneret")
+        .arg(Arg::with_name("address")
+            .short('a')
+            .long("address")
+            .value_name("ADDRESS")
+            .takes_value(true)
+            .about("Sets address to serve on"))
         .arg(Arg::with_name("config")
             .short('c')
             .long("config")
