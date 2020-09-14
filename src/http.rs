@@ -7,7 +7,11 @@ pub struct HttpResponse {
 impl HttpResponse {
     pub fn write_response(&self) -> String {
         format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n{}",
+            "HTTP/1.1 200 OK\r\n\
+            Content-Type: {}\r\n\
+            Content-Length: {}\r\n\
+            \r\n\
+            {}",
             self.content_type,
             self.content_length,
             self.body,
