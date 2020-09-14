@@ -56,7 +56,5 @@ fn get_args() -> clap::ArgMatches {
             .value_name("DIRECTORY")
             .takes_value(true)
             .about("Sets the web root directory"))
-        .arg(Arg::with_name("INPUT")
-            .required(true))
         .get_matches()
 }
