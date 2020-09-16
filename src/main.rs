@@ -16,12 +16,12 @@ fn main() -> std::io::Result<()> {
     let listener = TcpListener::bind(address)?;
 
     for stream in listener.incoming() {
-        handle_client(stream?);
+        handle_client(stream?, &matches);
     }
     Ok(())
 }
 
-fn handle_client(mut stream: TcpStream) {
+fn handle_client(mut stream: TcpStream, args: &clap::ArgMatches) {
     let mut buffer = [0; 1024];
 
     stream.read(&mut buffer).unwrap();
@@ -31,8 +31,7 @@ fn handle_client(mut stream: TcpStream) {
     let mut request = httparse::Request::new(&mut headers);
     let req_status = request.parse(&buffer).unwrap();
 
-    let matches = get_args();
-    let webroot = matches.value_of("webroot").unwrap_or("../www/index.html");
+    let webroot = args.value_of("webroot").unwrap_or("../www/index.html");
     let html = fs::read_to_string(webroot).unwrap();
 
     let response = format!(
