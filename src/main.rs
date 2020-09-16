@@ -3,7 +3,7 @@ mod http;
 use std::io::prelude::*;
 use std::fs;
 use std::net::{TcpListener, TcpStream};
-use crate::http::HttpResponse;
+use crate::http::{HttpRequest, HttpResponse};
 use clap::{Arg, App};
 
 fn main() -> std::io::Result<()> {
@@ -25,10 +25,7 @@ fn main() -> std::io::Result<()> {
 }
 
 fn handle_client(mut stream: TcpStream) {
-    let mut buffer = [0; 1024];
-
-    stream.read(&mut buffer).unwrap();
-    println!("{}", String::from_utf8_lossy(&buffer[..]));
+    let request = HttpRequest::from_stream(&stream);
 
     let matches = get_args();
     let webroot = matches.value_of("webroot").unwrap_or("../www/index.html");
@@ -40,7 +37,7 @@ fn handle_client(mut stream: TcpStream) {
         body: html,
     };
 
-    stream.write(response.write_response().as_bytes()).unwrap();
+    stream.write(response.to_string().as_bytes()).unwrap();
     stream.flush().unwrap();
 }
 
