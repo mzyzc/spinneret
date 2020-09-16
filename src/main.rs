@@ -1,9 +1,6 @@
-mod http;
-
 use std::io::prelude::*;
 use std::fs;
 use std::net::{TcpListener, TcpStream};
-use crate::http::HttpResponse;
 use clap::{Arg, App};
 
 fn main() -> std::io::Result<()> {
@@ -30,17 +27,26 @@ fn handle_client(mut stream: TcpStream) {
     stream.read(&mut buffer).unwrap();
     println!("{}", String::from_utf8_lossy(&buffer[..]));
 
+    let mut headers = [httparse::EMPTY_HEADER; 16];
+    let mut request = httparse::Request::new(&mut headers);
+    let req_status = request.parse(&buffer).unwrap();
+
     let matches = get_args();
     let webroot = matches.value_of("webroot").unwrap_or("../www/index.html");
     let html = fs::read_to_string(webroot).unwrap();
 
-    let response = HttpResponse {
-        content_type: String::from("text/html"),
-        content_length: html.len(),
-        body: html,
-    };
+    let response = format!(
+        "HTTP/1.1 200 OK\r\n\
+        Content-Type: {}\r\n\
+        Content-Length: {}\r\n\
+        \r\n\
+        {}",
+        "text/html",
+        html.len(),
+        html,
+    );
 
-    stream.write(response.write_response().as_bytes()).unwrap();
+    stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
 }
 
