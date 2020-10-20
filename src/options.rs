@@ -68,5 +68,6 @@ impl Options {
         println!("Serving on address: {}", opts.address);
         println!("Config file located at: {}", opts.config_path);
         println!("Web root directory located at: {}", opts.root_path);
+        println!();
     }
 }
