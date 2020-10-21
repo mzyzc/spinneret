@@ -11,7 +11,7 @@ impl Default for Options {
         Options {
             address: String::from("127.0.0.1:80"),
             config_path: String::from("settings.conf"),
-            root_path: String::from("../www/index.html"),
+            root_path: String::from("/var/www/html"),
         }
     }
 }

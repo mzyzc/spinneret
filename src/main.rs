@@ -25,7 +25,8 @@ fn handle_client(mut stream: TcpStream, opts: &options::Options) {
     //let mut request = httparse::Request::new(&mut headers);
     //let req_status = request.parse(&buffer).unwrap();
 
-    let html = fs::read_to_string(&opts.root_path).unwrap();
+    let html_path = format!("{}/{}", &opts.root_path, "index.html");
+    let html = fs::read_to_string(html_path).unwrap();
 
     let response = format!(
         "HTTP/1.1 200 OK\r\n\
