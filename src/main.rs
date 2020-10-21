@@ -21,9 +21,9 @@ fn handle_client(mut stream: TcpStream, opts: &options::Options) {
     stream.read(&mut buffer).unwrap();
     println!("{}", String::from_utf8_lossy(&buffer[..]));
 
-    let mut headers = [httparse::EMPTY_HEADER; 16];
-    let mut request = httparse::Request::new(&mut headers);
-    let _req_status = request.parse(&buffer).unwrap();
+    //let mut headers = [httparse::EMPTY_HEADER; 16];
+    //let mut request = httparse::Request::new(&mut headers);
+    //let req_status = request.parse(&buffer).unwrap();
 
     let html = fs::read_to_string(&opts.root_path).unwrap();
 
