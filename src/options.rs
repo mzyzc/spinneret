@@ -9,7 +9,7 @@ pub struct Options {
 impl Default for Options {
     fn default() -> Self {
         Options {
-            address: String::from("127.0.0.1:80"),
+            address: String::from("0.0.0.0:80"),
             config_path: String::from("settings.conf"),
             root_path: String::from("/var/www/html"),
         }
